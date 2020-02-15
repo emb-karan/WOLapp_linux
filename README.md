@@ -1,13 +1,7 @@
 
-2)Command :
+1)Command :
     
-    pip install espapp-pkg
-    
-  ## if pip not installed and getting error, run the below command and then re-run previous command
-  
-    sudo apt update
-    sudo apt install python-pip
-    
+    pip3 install wolapp
     
   ## if pip not installed and getting error, run the below command and then re-run previous command
    
@@ -15,8 +9,8 @@
     sudo apt install python3-pip
     
 
-3)Command :
+2)Command :
 
-    sudo espapp -h
+    sudo wolapp -H
     
 
