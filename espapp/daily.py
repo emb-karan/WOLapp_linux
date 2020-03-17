@@ -43,13 +43,13 @@ def update_new_comp():
         #            json.dump(macs, f)
 
         try:
-            with open(dirname + '/data/temp') as f:
+            with open(dirname + '/data/.temp') as f:
                 array = json.load(f)
 
             master_computer_mac = (':'.join(re.findall('..', '%012x' % uuid.getnode())))   # fetching computer mac add
 
             data_update = {}
-            data_update["wifi"] = array[2]
+            data_update["wifi"] = array[1]
             data_update["sub_host"] = jsondata
             data_update["master_mac"] = master_computer_mac
 
@@ -61,19 +61,12 @@ def update_new_comp():
                 l.write(type(ex).__name__)
 
 
-        send = "https://"
-        # send += array[0]
-        # send += ":"
-        # send += array[1]
-        # send += "@"
-        # send += "18.202.17.224:5003/api/update_auto"
-        auth_pass = (array[0], array[1])
-        send += "io.viriminfotech.com/api/update_auto/"
-        # send += "192.168.61.180:5001/api/update_auto/"
-        send += array[3]
+        # send = "https://io.viriminfotech.com/api/update_auto/"
+        send = "http://192.168.61.180:5001/api/update_auto/"
+        send += array[2]
 
         try:
-            r = requests.post(send, auth=auth_pass, data=collect_json_data)
+            r = requests.post(send, headers=array[0], data=collect_json_data)
             if r.status_code == 200:
                 print("Process completed successfully")
                 return 1

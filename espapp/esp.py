@@ -342,18 +342,25 @@ def send_data():
         #         re_password = getpass("Re-enter WiFi password (Hidden Field): ")
 
         # *!!!!!!!!!!!!!!!!!!!!!!*************************************************************************************
-        send = "https://"
-        # send += name
-        # send += ":"
-        # send += userpass
-        # send += "@"
-        send_per = send
-        # send += "192.168.61.180:5001/api/first_login"
-        send += "io.viriminfotech.com/api/first_login"
-        aut_pass = (name, userpass)
+
+        headers = {}
+        # send = "https://io.viriminfotech.com/api/first_login"
+        send = "http://192.168.61.180:5001/api/first_login"
 
         try:
-            r = requests.get(send, auth=aut_pass)
+            r = requests.post('http://192.168.61.180:5001/api-token-auth/',
+                              data={'username': name, 'password': userpass})
+
+            if r.status_code == 200:
+                print(".......... . . .")
+                token = eval(r.text)
+                headers["Authorization"] = "Token " + token["token"]
+
+            else:
+                print("Please check internet connection or Enter correct Device ID or password")
+                return 0
+
+            r = requests.get(send, headers=headers)
             if r.status_code == 200:
                 print("\n\rLogin successfully\n\r")
                 WOL_devices = json.loads(r.text)
@@ -405,12 +412,13 @@ def send_data():
                         return 0
 
                 # send = send_per
-                send = "https://io.viriminfotech.com/api/network/"
+                # send = "https://io.viriminfotech.com/api/network/"
+                send = "http://192.168.61.180:5001/api/network/"
                 send += WOL_id[option - 1]
 
                 device_id = WOL_id[option - 1]
 
-                r = requests.get(send, auth=aut_pass)
+                r = requests.get(send, headers=headers)
                 if r.status_code == 200:
                     ssid_list = json.loads(r.text)
 
@@ -486,8 +494,8 @@ def send_data():
                 # __________________________________________________________________________________
 
                 # ******************************** Storing credits for daily scan ***************
-                credits = [name, userpass, wifi, device_id]
-                path3 = dirname + "/data/temp"
+                credits = [headers, wifi, device_id]
+                path3 = dirname + "/data/.temp"
                 #        os.chmod(path3, 0o600)
                 with open(path3, 'w') as f:
                     json.dump(credits, f)
@@ -564,18 +572,12 @@ def send_data():
 
         # print(collect_json_data)
 
-        send = "https://"
-        # send += name
-        # send += ":"
-        # send += userpass
-        # send += "@"
-        # send += "192.168.61.180:5001/api/data/"
-        send += "io.viriminfotech.com/api/data/"
+        # send = "https://"io.viriminfotech.com/api/data/"
+        send = "http://192.168.61.180:5001/api/data/"
         send += device_id
-        aut_pass = (name, userpass)
 
         try:
-            r = requests.post(send, auth=aut_pass, data=collect_json_data)
+            r = requests.post(send, headers=headers, data=collect_json_data)
             if r.status_code == 200:
                 print("Process completed successfully")
                 return 1
