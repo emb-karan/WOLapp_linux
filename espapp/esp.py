@@ -194,18 +194,32 @@ def tool_run():
         ip_address_part += temp
         ip_address_part += ".255"
 
-        print("Your network ip address range: {0}".format(ip_address_part))
-        correct = input("Is it correct (y/n): ")
-
+        print("Your subnet range seems to be ", ip_address_part);
+        correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
         while yn_checker(correct):
-            correct = input("Is it correct (y/n): ")
+            correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
 
         if correct[0].lower() == 'n':
-            ip_address_part = input("Please enter correct IP address range ( For example: "
-                                    "192.168.148.1-192.168.148.255): ")
-            while ip_address_check(ip_address_part):
-                ip_address_part = input("Please enter correct IP address range ( For example: "
-                                        "192.168.148.1-192.168.148.255): ")
+            return 1
+
+
+
+        # Uncommeting this code till "88888" series will let you to enter ip range
+        # print("Your network ip address range: {0}".format(ip_address_part))
+        # print("Note: It is subnet range. If you don't know you can answer 'yes' below.")
+        # correct = input("Is it correct (y/n): ")
+
+        # while yn_checker(correct):
+        #     correct = input("Is it correct (y/n): ")
+        #
+        # if correct[0].lower() == 'n':
+        #     ip_address_part = input("Please enter correct IP address range ( For example: "
+        #                             "192.168.148.1-192.168.148.255): ")
+        #     while ip_address_check(ip_address_part):
+        #         ip_address_part = input("Please enter correct IP address range ( For example: "
+        #                                 "192.168.148.1-192.168.148.255): ")
+        # 88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+
         # print("Running Nbtscan ........")
         # subprocess.call(["nbtscan", ip_address_part])
         print("Wait a minute .....")
@@ -342,18 +356,25 @@ def send_data():
         #         re_password = getpass("Re-enter WiFi password (Hidden Field): ")
 
         # *!!!!!!!!!!!!!!!!!!!!!!*************************************************************************************
-        send = "https://"
-        # send += name
-        # send += ":"
-        # send += userpass
-        # send += "@"
-        send_per = send
-        # send += "192.168.61.180:5001/api/first_login"
-        send += "io.viriminfotech.com/api/first_login"
-        aut_pass = (name, userpass)
+
+        headers = {}
+        send = "https://io.viriminfotech.com/api/first_login"
+        #send = "http://192.168.61.180:5001/api/first_login"
 
         try:
-            r = requests.get(send, auth=aut_pass)
+            r = requests.post('https://io.viriminfotech.com/api-token-auth/',
+                              data={'username': name, 'password': userpass})
+
+            if r.status_code == 200:
+                print(".......... . . .")
+                token = eval(r.text)
+                headers["Authorization"] = "Token " + token["token"]
+
+            else:
+                print("Please check internet connection or Enter correct Device ID or password")
+                return 0
+
+            r = requests.get(send, headers=headers)
             if r.status_code == 200:
                 print("\n\rLogin successfully\n\r")
                 WOL_devices = json.loads(r.text)
@@ -406,11 +427,12 @@ def send_data():
 
                 # send = send_per
                 send = "https://io.viriminfotech.com/api/network/"
+                #send = "http://192.168.61.180:5001/api/network/"
                 send += WOL_id[option - 1]
 
                 device_id = WOL_id[option - 1]
 
-                r = requests.get(send, auth=aut_pass)
+                r = requests.get(send, headers=headers)
                 if r.status_code == 200:
                     ssid_list = json.loads(r.text)
 
@@ -486,8 +508,8 @@ def send_data():
                 # __________________________________________________________________________________
 
                 # ******************************** Storing credits for daily scan ***************
-                credits = [name, userpass, wifi, device_id]
-                path3 = dirname + "/data/temp"
+                credits = [headers, wifi, device_id]
+                path3 = dirname + "/data/.temp"
                 #        os.chmod(path3, 0o600)
                 with open(path3, 'w') as f:
                     json.dump(credits, f)
@@ -540,7 +562,9 @@ def send_data():
             cmd_run = dirname + '/daily.py &'
             cmd_run = "python3 " + cmd_run
             job2 = cron.new(command=cmd_run, comment='daily_run')
-            job2.minute.every(15)  # change it to hourly 888888880000000000000000000
+            # job2.minute.every(15)  # change it to hourly 888888880000000000000000000
+            job2.hour.every(5)  # change it to hourly 888888880000000000000000000
+            job.hour.also.on(11)
             cron.write()
 
             for jobs in cron:
@@ -561,21 +585,15 @@ def send_data():
             all_jsons['sub_host'] = []
 
         collect_json_data = json.dumps(all_jsons)
-
+        
         # print(collect_json_data)
 
-        send = "https://"
-        # send += name
-        # send += ":"
-        # send += userpass
-        # send += "@"
-        # send += "192.168.61.180:5001/api/data/"
-        send += "io.viriminfotech.com/api/data/"
+        send = "https://io.viriminfotech.com/api/data/"
+        #send = "http://192.168.61.180:5001/api/data/"
         send += device_id
-        aut_pass = (name, userpass)
 
         try:
-            r = requests.post(send, auth=aut_pass, data=collect_json_data)
+            r = requests.post(send, headers=headers, data=collect_json_data)
             if r.status_code == 200:
                 print("Process completed successfully")
                 return 1
