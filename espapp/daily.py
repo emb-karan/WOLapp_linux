@@ -61,8 +61,8 @@ def update_new_comp():
                 l.write(type(ex).__name__)
 
 
-        # send = "https://io.viriminfotech.com/api/update_auto/"
-        send = "http://192.168.61.180:5001/api/update_auto/"
+        send = "https://io.viriminfotech.com/api/update_auto/"
+        #ssend = "http://192.168.61.180:5001/api/update_auto/"
         send += array[2]
 
         try:

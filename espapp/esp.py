@@ -194,18 +194,32 @@ def tool_run():
         ip_address_part += temp
         ip_address_part += ".255"
 
-        print("Your network ip address range: {0}".format(ip_address_part))
-        correct = input("Is it correct (y/n): ")
-
+        print("Your subnet range seems to be ", ip_address_part);
+        correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
         while yn_checker(correct):
-            correct = input("Is it correct (y/n): ")
+            correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
 
         if correct[0].lower() == 'n':
-            ip_address_part = input("Please enter correct IP address range ( For example: "
-                                    "192.168.148.1-192.168.148.255): ")
-            while ip_address_check(ip_address_part):
-                ip_address_part = input("Please enter correct IP address range ( For example: "
-                                        "192.168.148.1-192.168.148.255): ")
+            return 1
+
+
+
+        # Uncommeting this code till "88888" series will let you to enter ip range
+        # print("Your network ip address range: {0}".format(ip_address_part))
+        # print("Note: It is subnet range. If you don't know you can answer 'yes' below.")
+        # correct = input("Is it correct (y/n): ")
+
+        # while yn_checker(correct):
+        #     correct = input("Is it correct (y/n): ")
+        #
+        # if correct[0].lower() == 'n':
+        #     ip_address_part = input("Please enter correct IP address range ( For example: "
+        #                             "192.168.148.1-192.168.148.255): ")
+        #     while ip_address_check(ip_address_part):
+        #         ip_address_part = input("Please enter correct IP address range ( For example: "
+        #                                 "192.168.148.1-192.168.148.255): ")
+        # 88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+
         # print("Running Nbtscan ........")
         # subprocess.call(["nbtscan", ip_address_part])
         print("Wait a minute .....")
@@ -344,11 +358,11 @@ def send_data():
         # *!!!!!!!!!!!!!!!!!!!!!!*************************************************************************************
 
         headers = {}
-        # send = "https://io.viriminfotech.com/api/first_login"
-        send = "http://192.168.61.180:5001/api/first_login"
+        send = "https://io.viriminfotech.com/api/first_login"
+        #send = "http://192.168.61.180:5001/api/first_login"
 
         try:
-            r = requests.post('http://192.168.61.180:5001/api-token-auth/',
+            r = requests.post('https://io.viriminfotech.com/api-token-auth/',
                               data={'username': name, 'password': userpass})
 
             if r.status_code == 200:
@@ -412,8 +426,8 @@ def send_data():
                         return 0
 
                 # send = send_per
-                # send = "https://io.viriminfotech.com/api/network/"
-                send = "http://192.168.61.180:5001/api/network/"
+                send = "https://io.viriminfotech.com/api/network/"
+                #send = "http://192.168.61.180:5001/api/network/"
                 send += WOL_id[option - 1]
 
                 device_id = WOL_id[option - 1]
@@ -548,7 +562,9 @@ def send_data():
             cmd_run = dirname + '/daily.py &'
             cmd_run = "python3 " + cmd_run
             job2 = cron.new(command=cmd_run, comment='daily_run')
-            job2.minute.every(15)  # change it to hourly 888888880000000000000000000
+            # job2.minute.every(15)  # change it to hourly 888888880000000000000000000
+            job2.hour.every(5)  # change it to hourly 888888880000000000000000000
+            job.hour.also.on(11)
             cron.write()
 
             for jobs in cron:
@@ -569,11 +585,11 @@ def send_data():
             all_jsons['sub_host'] = []
 
         collect_json_data = json.dumps(all_jsons)
-
+        
         # print(collect_json_data)
 
-        # send = "https://"io.viriminfotech.com/api/data/"
-        send = "http://192.168.61.180:5001/api/data/"
+        send = "https://io.viriminfotech.com/api/data/"
+        #send = "http://192.168.61.180:5001/api/data/"
         send += device_id
 
         try:

@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='wolapp',
-                 version='1.0.2',
+                 version='2.0',
                  description='WOL applicaion',
                  long_description=long_description,
                  author='Virim Infotech',
@@ -16,7 +16,7 @@ setuptools.setup(name='wolapp',
                  package_data={'espapp': ['data/*']},
                  include_package_data=True,
                  platforms='Linux',
-                 python_requires='!=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+                 python_requires='!=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
                  install_requires=[
                      'uuid',
                      'python-crontab',
