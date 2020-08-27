@@ -3,6 +3,7 @@ import uuid, re
 import subprocess
 from crontab import CronTab
 from getpass import getpass
+import time
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.SecurityWarning)
@@ -194,30 +195,31 @@ def tool_run():
         ip_address_part += temp
         ip_address_part += ".255"
 
-        print("Your subnet range seems to be ", ip_address_part);
-        correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
-        while yn_checker(correct):
-            correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
+         # Stage unconformed change *********************************************************
+        # print("Your network subnet range :", ip_address_part)
 
-        if correct[0].lower() == 'n':
-            return 1
-
+        # correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
+        # while yn_checker(correct):
+        #     correct = input("If it is correct, Enter (y) to continue and (n) to abort installation: ")
+        #
+        # if correct[0].lower() == 'n':
+        #     print("Aborting installation")
+        #     exit()
+        #     return 0
+        # **************************************************************************************************
 
 
         # Uncommeting this code till "88888" series will let you to enter ip range
-        # print("Your network ip address range: {0}".format(ip_address_part))
-        # print("Note: It is subnet range. If you don't know you can answer 'yes' below.")
-        # correct = input("Is it correct (y/n): ")
+        print("Your network IP address range: {0}".format(ip_address_part))
+        correct = input("Is it correct (y/n): ")
 
-        # while yn_checker(correct):
-        #     correct = input("Is it correct (y/n): ")
-        #
-        # if correct[0].lower() == 'n':
-        #     ip_address_part = input("Please enter correct IP address range ( For example: "
-        #                             "192.168.148.1-192.168.148.255): ")
-        #     while ip_address_check(ip_address_part):
-        #         ip_address_part = input("Please enter correct IP address range ( For example: "
-        #                                 "192.168.148.1-192.168.148.255): ")
+        while yn_checker(correct):
+            correct = input("Is it correct (y/n): ")
+
+        if correct[0].lower() == 'n':
+            ip_address_part = input("Please enter correct network IP address range (Subnet). For example: (192.168.148.1-192.168.148.255): ")
+            while ip_address_check(ip_address_part):
+                ip_address_part = input("Please enter correct network IP address range (Subnet). For example: (192.168.148.1-192.168.148.255): ")
         # 88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 
         # print("Running Nbtscan ........")
@@ -285,7 +287,7 @@ def send_data():
             master = input("Is it master computer (y/n): ")
 
         # for x in range(0, len(macs)):
-        #   print("{0}---------{1} --------- {2}".format(names[x], macs[x], ips[x]))
+        #   print("{0}---------{1} --------- {2}".format(names[x], macs[x], ips[x]))s
 
         jsondata = []
         for i in range(1, len(macs)):
@@ -309,28 +311,28 @@ def send_data():
         print(" - - - - - All inputs are case sensitive! - - - - - - - - - ")
         print("")
 
-        name = input("Enter email that is registered with VirimIO: ")
+        name = input("Enter email that is registered with Kratinn dashboard: ")
         # while len(name) != 12:
         #     print("Must be of length 12")
         #     name = input("Enter Device ID  : ")
 
-        userpass = getpass("Enter VirimIO password (Hidden Field): ")
+        userpass = getpass("Enter Kratinn password (Hidden Field): ")
         while checker(userpass, length=64):
-            userpass = getpass("Enter VirimIO password (Hidden Field): ")
+            userpass = getpass("Enter Kratinn dashboard password (Hidden Field): ")
 
-        user_repass = getpass("Re-Enter VirimIO password (Hidden Field): ")
+        user_repass = getpass("Re-Enter Kratinn dashboard password (Hidden Field): ")
         while checker(user_repass, length=64):
-            user_repass = getpass("Re-Enter VirimIO password (Hidden Field): ")
+            user_repass = getpass("Re-Enter Kratinn dashboard password (Hidden Field): ")
 
         while user_repass != userpass:
             print("WOL device password does not match: Please try again")
-            userpass = getpass("Enter VirimIO password (Hidden Field): ")
+            userpass = getpass("Enter Kratinn dashboard password (Hidden Field): ")
             while checker(userpass, length=64):
-                userpass = getpass("Enter VirimIO password (Hidden Field): ")
+                userpass = getpass("Enter Kratinn dashboard password (Hidden Field): ")
 
-            user_repass = getpass("Re-Enter VirimIO password (Hidden Field): ")
+            user_repass = getpass("Re-Enter Kratinn dashboard password (Hidden Field): ")
             while checker(user_repass, length=64):
-                user_repass = getpass("Re-Enter VirimIO password (Hidden Field): ")
+                user_repass = getpass("Re-Enter Kratinn dashboard password (Hidden Field): ")
 
         # wifi = input("Enter WiFi name (SSID)  : ")
         # while checker(wifi, length=32):
@@ -358,11 +360,11 @@ def send_data():
         # *!!!!!!!!!!!!!!!!!!!!!!*************************************************************************************
 
         headers = {}
-        send = "https://io.viriminfotech.com/api/first_login"
+        send = "https://dashboard.kratinn.com/api/first_login"
         #send = "http://192.168.61.180:5001/api/first_login"
 
         try:
-            r = requests.post('https://io.viriminfotech.com/api-token-auth/',
+            r = requests.post('https://dashboard.kratinn.com/api-token-auth/',
                               data={'username': name, 'password': userpass})
 
             if r.status_code == 200:
@@ -426,7 +428,7 @@ def send_data():
                         return 0
 
                 # send = send_per
-                send = "https://io.viriminfotech.com/api/network/"
+                send = "https://dashboard.kratinn.com/api/network/"
                 #send = "http://192.168.61.180:5001/api/network/"
                 send += WOL_id[option - 1]
 
@@ -564,7 +566,7 @@ def send_data():
             job2 = cron.new(command=cmd_run, comment='daily_run')
             # job2.minute.every(15)  # change it to hourly 888888880000000000000000000
             job2.hour.every(5)  # change it to hourly 888888880000000000000000000
-            job.hour.also.on(11)
+            job2.hour.also.on(11)
             cron.write()
 
             for jobs in cron:
@@ -588,7 +590,7 @@ def send_data():
         
         # print(collect_json_data)
 
-        send = "https://io.viriminfotech.com/api/data/"
+        send = "https://dashboard.kratinn.com/api/data/"
         #send = "http://192.168.61.180:5001/api/data/"
         send += device_id
 

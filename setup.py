@@ -4,10 +4,10 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='wolapp',
-                 version='2.0',
+                 version='2.1.1',
                  description='WOL applicaion',
                  long_description=long_description,
-                 author='Virim Infotech',
+                 author='Kratinn.com',
                  author_email='developer@viriminfotech.com',
                  license='Virim',
                  url="https://github.com/emb-karan/espapp-pkg",
