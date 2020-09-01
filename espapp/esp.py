@@ -657,7 +657,7 @@ def format_data():
             ip_first_octet += x
         find_string = "/"
         find_string += ip_first_octet
-        find_string += "/ {print $1}"
+        find_string += "/ && NR>1 {print $1}"
         # p = subprocess.check_output(["sudo", "awk", "/192/ {print $1}", path2]).decode("utf-8")
         p = subprocess.check_output(["sudo", "awk", find_string, path2]).decode("utf-8")
         f.write(p)
@@ -667,7 +667,7 @@ def format_data():
         f = open(path, "w")
         find_string = "/"
         find_string += ip_first_octet
-        find_string += "/ {print $2}"
+        find_string += "/ && NR>1 {print $2}"
         # p = subprocess.check_output(["sudo", "awk", "/192/ {print $2}", path2]).decode("utf-8")
         p = subprocess.check_output(["sudo", "awk", find_string, path2]).decode("utf-8")
         f.write(p)
